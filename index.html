@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ShuttleScore</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#08142f">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="index.html">
+            🏸 ShuttleScore
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div class="collapse navbar-collapse"
+             id="navbarNav">
+
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="index.html">
+                        🏠 Home
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="players.html">
+                        👥 Players
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="match.html">
+                        🏸 New Match
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="history.html">
+                        📜 History
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="leaderboard.html">
+                        🏆 Rankings
+                    </a>
+                </li>
+<li class="nav-item">
+    <a class="nav-link"
+       href="settings.html">
+       ⚙ Settings
+    </a>
+</li>
+            </ul>
+
+        </div>
+
+    </div>
+</nav>
+    <div class="container py-4">
+
+        <h1 class="fw-bold mb-4">
+            🏸 ShuttleScore
+        </h1>
+
+        <div class="row g-3">
+
+
+<div class="col-6">
+    <div class="card stat-card">
+        <div class="card-body text-center">
+            <h6>👥 Players</h6>
+            <h2 id="playerCount">0</h2>
+        </div>
+    </div>
+</div>
+
+<div class="col-6">
+    <div class="card stat-card">
+        <div class="card-body text-center">
+            <h6>🏸 Matches</h6>
+            <h2 id="matchCount">0</h2>
+        </div>
+    </div>
+</div>
+
+<div class="col-6">
+    <div class="card stat-card">
+        <div class="card-body text-center">
+            <h6>🏆 Top Player</h6>
+            <h5 id="topPlayer">-</h5>
+        </div>
+    </div>
+</div>
+
+<div class="col-6">
+    <div class="card stat-card">
+        <div class="card-body text-center">
+            <h6>📈 Best Win Rate</h6>
+            <h5 id="bestWinRate">-</h5>
+        </div>
+    </div>
+</div>
+
+
+</div>
+    <div class="text-center mt-4 mb-4">
+
+    <a
+        href="match.html"
+        class="btn btn-primary btn-lg quick-match-btn">
+
+        🏸 New Match
+
+    </a>
+
+</div>
+<div class="mt-4">
+    <h4>🏸 Recent Matches</h4>
+
+
+<div id="recentMatches"></div>
+
+
+</div>
+
+
+   
+
+<script>
+
+const players =
+JSON.parse(localStorage.getItem("players")) || [];
+
+const matches =
+JSON.parse(localStorage.getItem("matches")) || [];
+
+document.getElementById("playerCount")
+.textContent = players.length;
+
+document.getElementById("matchCount")
+.textContent = matches.length;
+
+let stats = {};
+
+players.forEach(player => {
+
+
+stats[player.name] = {
+    wins: 0,
+    losses: 0
+};
+
+
+});
+
+matches.forEach(match => {
+
+
+const winnerTeam =
+match.scoreA > match.scoreB
+? match.teamA
+: match.teamB;
+
+const loserTeam =
+match.scoreA > match.scoreB
+? match.teamB
+: match.teamA;
+
+winnerTeam.forEach(player => {
+
+    if(stats[player.name]){
+        stats[player.name].wins++;
+    }
+
+});
+
+loserTeam.forEach(player => {
+
+    if(stats[player.name]){
+        stats[player.name].losses++;
+    }
+
+});
+
+
+});
+
+let topPlayer = "-";
+let topWins = -1;
+
+let bestPlayer = "-";
+let bestRate = -1;
+
+Object.keys(stats).forEach(name => {
+
+
+const wins = stats[name].wins;
+const losses = stats[name].losses;
+
+const played = wins + losses;
+
+const rate =
+played > 0
+? (wins / played) * 100
+: 0;
+
+if(wins > topWins){
+
+    topWins = wins;
+    topPlayer = name;
+
+}
+
+if(rate > bestRate){
+
+    bestRate = rate;
+    bestPlayer = name;
+
+}
+
+
+});
+
+document.getElementById("topPlayer")
+.textContent = topPlayer;
+
+document.getElementById("bestWinRate")
+.textContent = bestPlayer;
+
+const recentContainer =
+document.getElementById("recentMatches");
+
+let recentHtml = "";
+
+[...matches]
+.reverse()
+.slice(0,3)
+.forEach(match => {
+
+
+const winnerTeam =
+match.scoreA > match.scoreB
+? match.teamA
+: match.teamB;
+
+recentHtml += `
+<div class="card stat-card mb-2">
+
+    <div class="card-body">
+
+        <div class="fw-bold">
+            🏆 ${
+            winnerTeam
+            .map(p => p.name)
+            .join(" & ")
+            }
+        </div>
+
+        <div>
+            ${match.scoreA}
+            -
+            ${match.scoreB}
+        </div>
+
+    </div>
+
+</div>
+`;
+
+
+});
+
+recentContainer.innerHTML =
+recentHtml || "<p>No matches yet</p>";
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker
+    .register("sw.js")
+    .then(() => {
+
+        console.log(
+            "Service Worker Registered"
+        );
+
+    });
+
+}
+</script>
+</body>
+
+</html>
