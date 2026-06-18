@@ -82,6 +82,7 @@
 
     </div>
 </nav>
+
     <div class="container py-4">
 <div class="text-center mb-4">
 
@@ -156,10 +157,59 @@
 
 </div>
 
+<div class="alert alert-success text-center">
 
+    📱 Install ShuttleScore on your phone
+
+    <br>
+
+    <button
+        id="installBtn"
+        class="btn btn-success btn-sm mt-2">
+
+        Install App
+
+    </button>
+
+</div>
    
 
 <script>
+    let deferredPrompt;
+
+window.addEventListener(
+    "beforeinstallprompt",
+    (e) => {
+
+        e.preventDefault();
+
+        deferredPrompt = e;
+
+        document
+        .getElementById("installBtn")
+        .style.display = "block";
+
+    }
+);
+
+document
+.getElementById("installBtn")
+.addEventListener(
+    "click",
+    async () => {
+
+        if(!deferredPrompt){
+            return;
+        }
+
+        deferredPrompt.prompt();
+
+        await deferredPrompt.userChoice;
+
+        deferredPrompt = null;
+
+    }
+);
 
 const players =
 JSON.parse(localStorage.getItem("players")) || [];
