@@ -70,3 +70,15 @@ body{
 .modal-content .btn-close{
     filter:invert(1);
 }
+.custom-navbar{
+    background: #1b2945;
+    border-bottom: 1px solid #2f4672;
+}
+
+.navbar-brand{
+    font-weight: 700;
+}
+
+.navbar-toggler{
+    border: 1px solid #2a3b63;
+}

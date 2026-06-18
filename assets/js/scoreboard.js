@@ -88,7 +88,7 @@ function checkWinner(){
     };
 
     if(
-        match.scoreA >= settings.winningScore &&
+        match.scoreA >= match.winningScore &&
         match.scoreA - match.scoreB >= settings.winBy
     ){
 
@@ -97,7 +97,7 @@ function checkWinner(){
     }
 
     if(
-        match.scoreB >= settings.winningScore &&
+       match.scoreB >= match.winningScore &&
         match.scoreB - match.scoreA >= settings.winBy
     ){
 

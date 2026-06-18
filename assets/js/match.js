@@ -106,7 +106,12 @@ players.forEach(player => {
 
 function startMatch(){
 
-
+const winningScore =
+parseInt(
+    document.getElementById(
+        "winningScore"
+    ).value
+);
 const matchType =
 document.getElementById("matchType").value;
 
@@ -144,22 +149,22 @@ let currentMatch;
 if(
     matchType === "singles"
 ){
+currentMatch = {
 
-    currentMatch = {
+    matchType: "singles",
 
-        matchType: "singles",
+    winningScore: winningScore,
 
-        teamA: [
-            matchPlayers[0]
-        ],
+    teamA: [
+        matchPlayers[0]
+    ],
 
-        teamB: [
-            matchPlayers[1]
-        ],
+    teamB: [
+        matchPlayers[1]
+    ],
 
-        scoreA: 0,
-        scoreB: 0,
-
+    scoreA: 0,
+    scoreB: 0,
         date:
         new Date()
         .toLocaleString()
@@ -170,20 +175,22 @@ if(
 
     currentMatch = {
 
-        matchType: "doubles",
+    matchType: "doubles",
 
-        teamA: [
-            matchPlayers[0],
-            matchPlayers[1]
-        ],
+    winningScore: winningScore,
 
-        teamB: [
-            matchPlayers[2],
-            matchPlayers[3]
-        ],
+    teamA: [
+        matchPlayers[0],
+        matchPlayers[1]
+    ],
 
-        scoreA: 0,
-        scoreB: 0,
+    teamB: [
+        matchPlayers[2],
+        matchPlayers[3]
+    ],
+
+    scoreA: 0,
+    scoreB: 0,
 
         date:
         new Date()
@@ -203,3 +210,34 @@ window.location.href =
 
 
 }
+document
+.getElementById("matchType")
+.addEventListener("change", () => {
+
+    const matchType =
+    document.getElementById(
+        "matchType"
+    ).value;
+
+    const title =
+    document.getElementById(
+        "selectionTitle"
+    );
+
+    if(matchType === "singles"){
+
+        title.textContent =
+        "Select 2 Players";
+
+    }else{
+
+        title.textContent =
+        "Select 4 Players";
+
+    }
+
+    selectedPlayers = [];
+
+    updateSelectionUI();
+
+});
