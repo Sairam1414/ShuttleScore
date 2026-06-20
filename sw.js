@@ -1,4 +1,4 @@
-const CACHE_NAME = "shuttlescore-v4";
+const CACHE_NAME = "shuttlescore-v5";
 
 const urlsToCache = [
 "./",

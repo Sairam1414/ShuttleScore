@@ -147,6 +147,11 @@ new Date()
         JSON.stringify(matches)
     );
 
-    window.location.href =
-    "history.html";
+    localStorage.setItem(
+    "lastFinishedMatch",
+    JSON.stringify(match)
+);
+
+window.location.href =
+"result.html";
 }

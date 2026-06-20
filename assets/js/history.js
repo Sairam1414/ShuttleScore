@@ -71,6 +71,46 @@ return {
 
 
 }
+function getSessionLeaderboard(sessionDate){
+
+
+const sessionMatches =
+matches.filter(
+    match =>
+    match.sessionDate === sessionDate
+);
+
+let wins = {};
+
+sessionMatches.forEach(match => {
+
+    const winnerTeam =
+    match.scoreA > match.scoreB
+    ? match.teamA
+    : match.teamB;
+
+    winnerTeam.forEach(player => {
+
+        if(!wins[player.name]){
+
+            wins[player.name] = 0;
+
+        }
+
+        wins[player.name]++;
+
+    });
+
+});
+
+return Object.entries(wins)
+.sort(
+    (a,b) => b[1] - a[1]
+)
+.slice(0,3);
+
+
+}
 
 renderHistory();
 
@@ -123,38 +163,82 @@ match.sessionDate;
 
 const summary =
 getSessionSummary(
-match.sessionDate
+    match.sessionDate
+);
+
+const leaderboard =
+getSessionLeaderboard(
+    match.sessionDate
+);
+
+let leaderboardHtml = "";
+
+leaderboard.forEach(
+    (player,index) => {
+
+        const medal =
+
+        index === 0
+        ? "🥇"
+
+        : index === 1
+        ? "🥈"
+
+        : "🥉";
+
+        leaderboardHtml += `
+
+<p class="mb-1 text-center">
+
+    ${medal}
+    ${player[0]}
+    • ${player[1]} Wins
+
+</p>
+
+`;
+
+    }
 );
 
 html += `
 
 <div class="card stat-card mb-3">
 
+    <div class="card-body">
 
-<div class="card-body">
+        <h4>
+            📅 ${match.sessionDate}
+        </h4>
 
-    <h4>
-        📅 ${match.sessionDate}
-    </h4>
+       <p class="mb-1">
+    🏸 Matches:
+    ${summary.matches}
+</p>
 
-    <p class="mb-1">
-        🏸 Matches:
-        ${summary.matches}
-    </p>
+<h6 class="mt-3 mb-2 text-center">
+     Session Leaderboard
+</h6>
 
-    <p class="mb-0">
-        🏆 Session Champion:
-        ${summary.champion}
-    </p>
+<div class="mt-2">
+
+    ${leaderboardHtml}
 
 </div>
 
+      <p class="mb-0 mt-2 text-center fw-bold">
+  🏆 Man of the Match :
+    ${summary.champion} 🏆
+</p>
+
+    </div>
 
 </div>
 `;
 
 
 }
+
 
     html += `
     <div class="card stat-card mb-3">

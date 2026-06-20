@@ -128,25 +128,46 @@
             class="form-select mb-4">
 
             <option value="5">5</option>
-            <option value="10">10</option>
+            <option value="10"selected>10</option>
             <option value="15">15</option>
-            <option value="21" selected>21</option>
+            <option value="21">21</option>
 
         </select>
+<h5
+    class="mb-3"
+    id="teamATitle">
 
-        <h5
-            class="mb-3"
-            id="selectionTitle">
+    🏸 Team A (0/2)
 
-            Select 4 Players
+</h5>
+<div
+    id="teamAPlayers"
+    class="mb-4">
+</div>
 
-        </h5>
+<h5
+    class="mb-3"
+    id="teamBTitle">
 
-        <div
-            id="playersContainer"
-            class="row g-3">
-        </div>
+    🏸 Team B (0/2)
 
+</h5>
+
+<div
+    id="teamBPlayers"
+    class="mb-4">
+</div>
+
+<hr>
+
+<h5 class="mb-3">
+    👥 Available Players
+</h5>
+
+<div
+    id="playersContainer"
+    class="row g-3">
+</div>
         <button
             class="btn btn-primary mt-4 w-100"
             onclick="startMatch()">
@@ -164,6 +185,54 @@
                 ➕ Add Player
 
             </a>
+
+        </div>
+
+    </div>
+
+</div>
+<div
+    class="modal fade"
+    id="teamModal"
+    tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Select Team
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <button
+                    class="btn btn-primary w-100 mb-2"
+                    onclick="assignTeam('A')">
+
+                    🏸 Team A
+
+                </button>
+
+                <button
+                    class="btn btn-success w-100"
+                    onclick="assignTeam('B')">
+
+                    🏸 Team B
+
+                </button>
+
+            </div>
 
         </div>
 

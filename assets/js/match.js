@@ -1,27 +1,67 @@
 const players =
-JSON.parse(localStorage.getItem("players")) || [];
+JSON.parse(
+localStorage.getItem("players")
+) || [];
 
-let selectedPlayers = [];
+let teamA = [];
+let teamB = [];
 
+let selectedPlayerId = null;
+const maxPlayers =
+document.getElementById(
+    "matchType"
+).value === "singles"
+? 1
+: 2;
+
+document.getElementById(
+    "teamATitle"
+).textContent =
+`🏸 Team A (${teamA.length}/${maxPlayers})`;
+
+document.getElementById(
+    "teamBTitle"
+).textContent =
+`🏸 Team B (${teamB.length}/${maxPlayers})`;
 renderPlayers();
+renderTeams();
 
 function renderPlayers(){
 
-
 const container =
-document.getElementById("playersContainer");
+document.getElementById(
+    "playersContainer"
+);
 
 let html = "";
 
-players.forEach(player => {
+const assignedIds = [
+
+    ...teamA.map(
+        player => player.id
+    ),
+
+    ...teamB.map(
+        player => player.id
+    )
+
+];
+
+players
+.filter(
+    player =>
+    !assignedIds.includes(
+        player.id
+    )
+)
+.forEach(player => {
 
     html += `
     <div class="col-6">
 
         <div
             class="card stat-card player-card"
-            onclick="togglePlayer(${player.id})"
-            id="player-${player.id}">
+            onclick="selectPlayer(${player.id})">
 
             <div class="card-body text-center">
 
@@ -35,6 +75,7 @@ players.forEach(player => {
 
     </div>
     `;
+
 });
 
 container.innerHTML = html;
@@ -42,69 +83,203 @@ container.innerHTML = html;
 
 }
 
-function togglePlayer(id){
+function selectPlayer(id){
 
+
+selectedPlayerId = id;
+
+const modal =
+new bootstrap.Modal(
+    document.getElementById(
+        "teamModal"
+    )
+);
+
+modal.show();
+
+
+}
+
+function assignTeam(team){
+
+
+const player =
+players.find(
+    p => p.id === selectedPlayerId
+);
+
+if(!player) return;
+
+teamA =
+teamA.filter(
+    p => p.id !== player.id
+);
+
+teamB =
+teamB.filter(
+    p => p.id !== player.id
+);
 
 const matchType =
-document.getElementById("matchType").value;
+document.getElementById(
+    "matchType"
+).value;
 
 const maxPlayers =
 matchType === "singles"
-? 2
-: 4;
+? 1
+: 2;
 
-const index =
-selectedPlayers.indexOf(id);
+if(
+    team === "A" &&
+    teamA.length >= maxPlayers
+){
 
-if(index > -1){
+    alert(
+        "Team A is full"
+    );
 
-    selectedPlayers.splice(index,1);
+    return;
+
+}
+
+if(
+    team === "B" &&
+    teamB.length >= maxPlayers
+){
+
+    alert(
+        "Team B is full"
+    );
+
+    return;
+
+}
+
+if(team === "A"){
+
+    teamA.push(player);
 
 }else{
 
-    if(selectedPlayers.length >= maxPlayers){
-
-        alert(
-            `Only ${maxPlayers} players allowed`
-        );
-
-        return;
-    }
-
-    selectedPlayers.push(id);
-}
-
-updateSelectionUI();
-
+    teamB.push(player);
 
 }
 
-function updateSelectionUI(){
+renderTeams();
 
-
-players.forEach(player => {
-
-    const card =
+bootstrap.Modal
+.getInstance(
     document.getElementById(
-        `player-${player.id}`
-    );
+        "teamModal"
+    )
+)
+.hide();
 
-    if(!card) return;
 
-    card.classList.remove("selected");
+}
+function removePlayer(id){
 
-    if(
-        selectedPlayers.includes(player.id)
-    ){
-        card.classList.add("selected");
-    }
 
-});
+teamA =
+teamA.filter(
+    player =>
+    player.id !== id
+);
+
+teamB =
+teamB.filter(
+    player =>
+    player.id !== id
+);
+
+renderTeams();
+
+}
+
+function renderTeams(){
+
+
+document.getElementById(
+    "teamAPlayers"
+).innerHTML =
+
+teamA.length
+? teamA.map(
+player => ` <span
+     class="badge rounded-pill px-3 py-2 me-2 mb-2"
+     style="
+         background:#2563eb;
+         cursor:pointer;
+         font-size:14px;
+         font-weight:600;
+     "
+     onclick="removePlayer(${player.id})">
+
+
+    ${player.name} ✕
+
+</span>
+`
+
+
+).join("")
+: "<p>No players selected</p>";
+
+
+
+
+document.getElementById(
+    "teamBPlayers"
+).innerHTML =
+
+teamB.length
+? teamB.map(
+player => ` <span
+     class="badge rounded-pill px-3 py-2 me-2 mb-2"
+     style="
+         background:#22c55e;
+         cursor:pointer;
+         font-size:14px;
+         font-weight:600;
+     "
+     onclick="removePlayer(${player.id})">
+
+
+    ${player.name} ✕
+
+</span>
+`
+
+
+).join("")
+: "<p>No players selected</p>";
+
+
+const maxPlayers =
+document.getElementById(
+    "matchType"
+).value === "singles"
+? 1
+: 2;
+
+document.getElementById(
+    "teamATitle"
+).textContent =
+`🏸 Team A (${teamA.length}/${maxPlayers})`;
+
+document.getElementById(
+    "teamBTitle"
+).textContent =
+`🏸 Team B (${teamB.length}/${maxPlayers})`;
+
+renderPlayers();
 
 
 }
 
 function startMatch(){
+
 
 const winningScore =
 parseInt(
@@ -112,93 +287,62 @@ parseInt(
         "winningScore"
     ).value
 );
+
 const matchType =
-document.getElementById("matchType").value;
-
-const matchPlayers =
-players.filter(player =>
-    selectedPlayers.includes(player.id)
-);
+document.getElementById(
+    "matchType"
+).value;
 
 if(
-   matchType === "singles" &&
-    selectedPlayers.length !== 2
+    matchType === "singles" &&
+    (
+        teamA.length !== 1 ||
+        teamB.length !== 1
+    )
 ){
 
     alert(
-        "Select exactly 2 players"
+        "Select 1 player for each team"
     );
 
     return;
+
 }
 
 if(
-   matchType === "doubles" &&
-    selectedPlayers.length !== 4
+    matchType === "doubles" &&
+    (
+        teamA.length !== 2 ||
+        teamB.length !== 2
+    )
 ){
 
     alert(
-        "Select exactly 4 players"
+        "Select 2 players for each team"
     );
 
     return;
+
 }
 
-let currentMatch;
+const currentMatch = {
 
-if(
-    matchType === "singles"
-){
-currentMatch = {
-
-    matchType: "singles",
+    matchType: matchType,
 
     winningScore: winningScore,
 
-    teamA: [
-        matchPlayers[0]
-    ],
+    teamA: teamA,
 
-    teamB: [
-        matchPlayers[1]
-    ],
-
-    scoreA: 0,
-    scoreB: 0,
-        date:
-        new Date()
-        .toLocaleString()
-
-    };
-
-}else{
-
-    currentMatch = {
-
-    matchType: "doubles",
-
-    winningScore: winningScore,
-
-    teamA: [
-        matchPlayers[0],
-        matchPlayers[1]
-    ],
-
-    teamB: [
-        matchPlayers[2],
-        matchPlayers[3]
-    ],
+    teamB: teamB,
 
     scoreA: 0,
     scoreB: 0,
 
-        date:
-        new Date()
-        .toLocaleString()
+    date:
+    new Date()
+    .toLocaleString()
 
-    };
-
-}
+};
 
 localStorage.setItem(
     "currentMatch",
@@ -210,34 +354,16 @@ window.location.href =
 
 
 }
+
 document
 .getElementById("matchType")
 .addEventListener("change", () => {
 
-    const matchType =
-    document.getElementById(
-        "matchType"
-    ).value;
 
-    const title =
-    document.getElementById(
-        "selectionTitle"
-    );
+teamA = [];
+teamB = [];
 
-    if(matchType === "singles"){
+renderTeams();
 
-        title.textContent =
-        "Select 2 Players";
-
-    }else{
-
-        title.textContent =
-        "Select 4 Players";
-
-    }
-
-    selectedPlayers = [];
-
-    updateSelectionUI();
 
 });
